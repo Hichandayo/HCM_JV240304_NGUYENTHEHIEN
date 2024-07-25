@@ -1,32 +1,47 @@
 package ra.entity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.regex.Pattern;
+import static ra.service.LaptopTypeService.laptopTypes;
 
 public class Laptop {
-    static LaptopType laptopType = new LaptopType();
-    Laptop[] laptops;
-    private static int count = 0;
-    private String laptopId, description, laptopName;
+    private String laptopId, laptopName, description;
     private int ram, typeId;
     private double weight, laptopPrice;
     private Date createAt;
-    private boolean isDeleted;
+    private boolean isDelete;
+    public static int auto = 1;
+    private LaptopType laptopTypess;
+
 
     public Laptop() {
-        this.laptopId = String.format("D%04d", ++count);
     }
 
-    public Laptop(String laptopId, String laptopName, String description, int ram, double weight, Date createAt, double laptopPrice, int typeId, boolean isDeleted) {
-        this.laptopName = laptopName;
+
+
+    public Laptop(String laptopId, String laptopName, String description, int ram, int typeId, double weight, double laptopPrice, Date createAt, boolean isDelete) {
         this.laptopId = laptopId;
+        this.laptopName = laptopName;
         this.description = description;
         this.ram = ram;
-        this.weight = weight;
-        this.createAt = createAt;
-        this.laptopPrice = laptopPrice;
         this.typeId = typeId;
-        this.isDeleted = isDeleted;
+        this.weight = weight;
+        this.laptopPrice = laptopPrice;
+        this.createAt = createAt;
+        this.isDelete = isDelete;
+        this.laptopTypess = laptopTypess;//has a
+
+    }
+
+    public LaptopType getLaptopTypess() {
+        return laptopTypess;
+    }
+
+    public void setLaptopTypess(LaptopType laptopTypess) {
+        this.laptopTypess = laptopTypess;
     }
 
     public String getLaptopId() {
@@ -61,20 +76,20 @@ public class Laptop {
         this.ram = ram;
     }
 
+    public int getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
+
     public double getWeight() {
         return weight;
     }
 
     public void setWeight(double weight) {
         this.weight = weight;
-    }
-
-    public Date getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(Date createAt) {
-        this.createAt = createAt;
     }
 
     public double getLaptopPrice() {
@@ -85,58 +100,155 @@ public class Laptop {
         this.laptopPrice = laptopPrice;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public Date getCreateAt() {
+        return createAt;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
+    public boolean isDelete() {
+        return isDelete;
     }
 
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+    public void setDelete(boolean delete) {
+        isDelete = delete;
     }
 
-    Scanner scanner = new Scanner(System.in);
+    public static int getAuto() {
+        return auto;
+    }
 
-    public Laptop inputData() {
-        System.out.println("Nhập tên Laptop : ");
-        laptopName = scanner.next();
-        while (laptopName.isEmpty()) {
-            System.err.println("tên không được để trống!! vui lòng nhập lại");
-            laptopName = scanner.next();
+    public static void setAuto(int auto) {
+        Laptop.auto = auto;
+    }
+
+    public void inputData() {
+        Scanner sc = new Scanner(System.in);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
+        while (true) {
+            System.out.print("Nhập mã của laptop (L****): ");
+            String laptopId = sc.nextLine();
+            if (Pattern.matches("^L\\d{4}$", laptopId)) {
+                this.laptopId = laptopId;
+                break;
+            } else {
+                System.out.println("Nhập chưa đúng định dạng, vui lòng nhập lại.");
+            }
         }
-        System.out.println("Nhập mô tả Laptop : ");
-        description = scanner.next();
-        while (description.isEmpty()) {
-            System.err.println("Mô tả không được để trống!! vui lòng nhập lại.");
-            description = scanner.next();
+
+        while (true) {
+            System.out.print("Tên của laptop: ");
+            String laptopName = sc.nextLine();
+            if (!laptopName.isEmpty() && !laptopName.equals(this.laptopName)) {
+                this.laptopName = laptopName;
+                break;
+            } else {
+                System.out.println("Tên không được để trống và không trùng lặp với tên hiện tại.");
+            }
         }
-        System.out.println("Nhập Ram : ");
-        ram = Integer.parseInt(scanner.nextLine());
-        while (ram <= 0) {
-            System.err.println("Ram không được bé hơn 0");
-            ram = Integer.parseInt(scanner.nextLine());
+
+        while (true) {
+            System.out.print("Mô tả của laptop: ");
+            String description = sc.nextLine();
+            if (!description.isEmpty()) {
+                this.description = description;
+                break;
+            } else {
+                System.out.println("Mô tả không được để trống.");
+            }
         }
-        System.out.println("Nhập trọng lượng : ");
-        weight = Double.parseDouble(scanner.nextLine());
-        while (weight <= 0) {
-            System.err.println("Trọng lượng không được bé hơn 0");
-            weight = Double.parseDouble(scanner.nextLine());
+
+        while (true) {
+            try {
+                System.out.print("RAM của laptop : ");
+                int ram = Integer.parseInt(sc.nextLine());
+                if (ram > 0) {
+                    this.ram = ram;
+                    break;
+                } else {
+                    System.out.println("RAM phải lớn hơn 0.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Giá trị không hợp lệ, vui lòng nhập lại.");
+            }
         }
-        System.out.println("Nhập giá : ");
-        laptopPrice = Double.parseDouble(scanner.nextLine());
-        while (laptopPrice <= 0) {
-            System.err.println("giá không được bé hơn 0");
-            laptopPrice = Double.parseDouble(scanner.nextLine());
+
+        while (true) {
+            try {
+                System.out.print("Cân nặng laptop (kg): ");
+                double weight = Double.parseDouble(sc.nextLine());
+                if (weight > 0) {
+                    this.weight = weight;
+                    break;
+                } else {
+                    System.out.println("Cân nặng phải lớn hơn 0.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Giá trị không hợp lệ, vui lòng nhập lại.");
+            }
         }
-        for (int i = 0; i < LaptopType.laptopTypes.length; i++) {
-//            System.out.println("|LaptopTypeId : %-5d|\n",LaptopType.laptopTypes[i].getTypeId());
+
+        while (true) {
+            try {
+                System.out.print("Giá của laptop: ");
+                double laptopPrice = Double.parseDouble(sc.nextLine());
+                if (laptopPrice > 0) {
+                    this.laptopPrice = laptopPrice;
+                    break;
+                } else {
+                    System.out.println("Giá phải lớn hơn 0.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Giá trị không hợp lệ, vui lòng nhập lại.");
+            }
         }
-        return new Laptop() ;
+
+        while (true) {
+            System.out.print("Ngày nhập kho (yyyy/MM/dd): ");
+            try {
+                Date createAt = sdf.parse(sc.nextLine());
+                this.createAt = createAt;
+                break;
+            } catch (ParseException e) {
+                System.out.println("Ngày không hợp lệ, vui lòng nhập lại.");
+            }
+        }
+        for (int i = 0; i < laptopTypes.length ; i++) {
+            System.out.printf("%d . %s\n",i+1,laptopTypes[i].getTypeName()); // 1. JV230304
+        }
+        while (true) {
+            try {
+                System.out.print("Nhập loại máy tính (ID) : ");
+                int typeId = Integer.parseInt(sc.nextLine());
+                if (typeId > 0) {
+                    this.typeId = typeId;
+                    break;
+                } else {
+                    System.out.println("ID loại máy tính không hợp lệ.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("ID không hợp lệ, vui lòng nhập lại.");
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String createDateStr = (createAt != null) ? sdf.format(createAt) : "N/A";
+        return
+                "   | ID : " + laptopId +
+                        "   | Name : " + laptopName +
+                        "   | Description : " + description +
+                        "   | Ram : " + ram +
+                        "   | typeID : " + typeId +
+                        "   | Weight : " + weight +
+                        "   | Price : " + laptopPrice +
+                        "   | createAt : " + createDateStr +
+                        "   | isDelete : " + isDelete
+                ;
     }
 }
